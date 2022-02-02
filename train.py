@@ -1,6 +1,8 @@
+import os
+
 import tensorflow as tf
 import numpy as np
-import os
+import joblib 
 
 
 file_url = "https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt"
@@ -66,3 +68,5 @@ model.fit(dataset, epochs=50, callbacks=[ResetStatesCallback()])
 
 model.save(os.path.join(os.getcwd(), "models", "stateful"))
 model.save_weights(os.path.join(os.getcwd(), "weights", "shakespearean"))
+
+joblib.dump(tokenizer, "tokenizer.save")
