@@ -33,7 +33,7 @@ encoded_parts = np.array_split(encoded[:train_size], batch_size)
 datasets = list()
 for part in encoded_parts:
     dataset = tf.data.Dataset.from_tensor_slices(part)
-    dataset = dataset.window(size=window_length, stride=n_steps, drop_remainder=True)
+    dataset = dataset.window(size=window_length, shift=n_steps, drop_remainder=True)
 
     # since window method of dataset returns a new dataset per window
     # the dataset object becomes a dataset of datasets
@@ -44,14 +44,14 @@ for part in encoded_parts:
 
 dataset = tf.data.Dataset.zip(tuple(datasets)).map(lambda *windows: tf.stack(windows))
 dataset = dataset.map(lambda windows: (windows[:, :-1], windows[:, 1:])) # creates labels
-dataset = dataset.map(lambda X_batch, y_batch: (tf.one_hot(X_batch, max_depth=max_depth), y_batch))
+dataset = dataset.map(lambda X_batch, y_batch: (tf.one_hot(X_batch, depth=max_depth), y_batch))
 dataset = dataset.prefetch(1)
 
 model = tf.keras.Sequential()
 
 # creation of stateful Char-RNN model
 model.add(tf.keras.layers.GRU(256, return_sequences=True, stateful=True,
-                              actvation="tanh", dropout=0.2, recurrent_dropout=0.3, batch_input_shape=[batch_size, None, max_depth]))
+                              activation="tanh", dropout=0.2, recurrent_dropout=0.3, batch_input_shape=[batch_size, None, max_depth]))
 model.add(tf.keras.layers.GRU(256, return_sequences=True, stateful=True, activation="tanh", dropout=0.2, recurrent_dropout=0.3))
 model.add(tf.keras.layers.GRU(128, return_sequences=True, stateful=True, activation="tanh", dropout=0.2, recurrent_dropout=0.3))
 model.add(tf.keras.layers.TimeDistributed(tf.keras.layers.Dense(max_depth, activation="softmax")))
