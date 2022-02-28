@@ -2,7 +2,7 @@
 
 This project contains an impelementation of stateful Char-RNN model to generate fake shakespearean texts.
 
-Files and folders of the project.
+### Files and folders of the project:
 
 > [models](https://github.com/recep-yildirim/Fake-Shakespearean-Text-Generator/tree/master/models) folder
 
